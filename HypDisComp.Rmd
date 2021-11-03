@@ -5,3 +5,176 @@ date: "11/3/2021"
 output: html_document
 ---
 
+```{r}
+Inconsistency_test = function(reward,cost,discount){
+
+  ##Determine first period choice given costs, rewards, and discount level for different discounting functions
+  
+  #beta = discount, t = payoff time, tau = planning time
+  ######################
+  
+  # Period 1
+  
+  ## exponential discounting beta^t
+  
+  rperiod1ex1 = -cost[1]+(discount)*reward[2]+(discount^2)*reward[3]+(discount^3)*reward[4]
+  
+  rperiod2ex1 = reward[1]-(discount)*cost[2]+(discount^2)*reward[3]+(discount^3)*reward[4]
+  
+  rperiod3ex1 = reward[1]+(discount)*reward[2]-(discount^2)*cost[3]+(discount^3)*reward[4]
+  
+  rperiod4ex1 = reward[1]+(discount)*reward[2]+(discount^2)*reward[3]-(discount^3)*cost[4]
+  
+  expdec1 = which.max(c(rperiod1ex1,rperiod2ex1,rperiod3ex1,rperiod4ex1))
+  
+  ## inconsistent hyperbolic discounting 1/(1+beta(t-tau))
+  
+  rperiod1ihyp1 = -cost[1]+(1/(1+discount))*reward[2]+(1/(1+discount*2))*reward[3]+(1/(1+discount*3))*reward[4]
+  
+  rperiod2ihyp1 = reward[1]-(1/(1+discount))*cost[2]+(1/(1+discount*2))*reward[3]+(1/(1+discount*3))*reward[4]
+  
+  rperiod3ihyp1 = reward[1]+(1/(1+discount))*reward[2]-(1/(1+discount*2))*cost[3]+(1/(1+discount*3))*reward[4]
+  
+  rperiod4ihyp1 = reward[1]+(1/(1+discount))*reward[2]+(1/(1+discount*2))*reward[3]-(1/(1+discount*3))*cost[4]
+  
+  ihypdec1 = which.max(c(rperiod1ihyp1,rperiod2ihyp1,rperiod3ihyp1,rperiod4ihyp1))
+  
+  ## consistent hyperbolic discounting (1+beta*tau)/(1+beta*t)
+  
+  rperiod1chyp1 = -cost[1]+((1+discount)/(1+discount*2))*reward[2]+((1+discount)/(1+discount*3))*reward[3]+((1+discount)/(1+discount*4))*reward[4]
+  
+  rperiod2chyp1 = reward[1]-((1+discount)/(1+discount*2))*cost[2]+((1+discount)/(1+discount*3))*reward[3]+((1+discount)/(1+discount*4))*reward[4]
+  
+  rperiod3chyp1 = reward[1]+((1+discount)/(1+discount*2))*reward[2]-((1+discount)/(1+discount*3))*cost[3]+((1+discount)/(1+discount*4))*reward[4]
+  
+  rperiod4chyp1 = reward[1]+((1+discount)/(1+discount*2))*reward[2]+((1+discount)/(1+discount*3))*reward[3]-((1+discount)/(1+discount*4))*cost[4]
+  
+  chypdec1 = which.max(c(rperiod1chyp1,rperiod2chyp1,rperiod3chyp1,rperiod4chyp1))
+  
+  ## Each gives period 1 decision. If reward chosen in 1, decision making over. Report decision as 1, can not determine inconsistency.
+  
+  
+  
+  #######################
+  
+  # Period 2
+  
+   ## exponential discounting beta^t
+  
+  rperiod2ex2 = -cost[2]+(discount)*reward[3]+(discount^2)*reward[4]
+  
+  rperiod3ex2 = reward[2]-(discount)*cost[3]+(discount^2)*reward[4]
+  
+  rperiod4ex2 = reward[2]+(discount)*reward[3]-(discount^2)*cost[4]
+  
+  expdec2 = ifelse(expdec1 == 1,1,
+                   which.max(c(NA,rperiod2ex2,rperiod3ex2,rperiod4ex2)))
+  
+  ## inconsistent hyperbolic discounting 1/(1+beta(t-tau))
+  
+  
+  rperiod2ihyp2 = -cost[2]-+(1/(1+discount))*reward[3]+(1/(1+discount*2))*reward[4]
+  
+  rperiod3ihyp2 = reward[2]-(1/(1+discount))*cost[3]+(1/(1+discount*2))*reward[4]
+  
+  rperiod4ihyp2 = reward[2] +(1/(1+discount))*reward[3]- (1/(1+discount*2))*cost[4]
+  
+  ihypdec2 = ifelse(ihypdec1 == 1,1,
+                    which.max(c(NA,rperiod2ihyp2,rperiod3ihyp2,rperiod4ihyp2)))
+  
+  ## consistent hyperbolic discounting (1+beta*tau)/(1+beta*t)
+  
+  
+  rperiod2chyp2 = -cost[2]+((1+2*discount)/(1+discount*3))*reward[3]+((1+2*discount)/(1+discount*4))*reward[4]
+  
+  rperiod3chyp2 = reward[2]-((1+2*discount)/(1+discount*3))*cost[3]+((1+2*discount)/(1+discount*4))*reward[4]
+  
+  rperiod4chyp2 = reward[2]+((1+2*discount)/(1+discount*3))*reward[3]-((1+2*discount)/(1+discount*4))*cost[4]
+
+  chypdec2 = ifelse(chypdec1 == 1,1,
+                    which.max(c(NA,rperiod2chyp2,rperiod3chyp2,rperiod4chyp2)))
+  
+  #############
+  
+  
+  # Period 3 & 4
+    
+    ## exponential discounting beta^t
+  
+  rperiod3ex3 = -cost[3]+(discount)*reward[4]
+  
+  rperiod4ex3 = reward[3]-(discount)*cost[4]
+  
+  expdec3 = ifelse(expdec1 == 1,1,
+                   ifelse(expdec2 == 2,2,
+                          which.max(c(NA,NA,rperiod3ex3,rperiod4ex3))))
+  
+  expdec4 = ifelse(expdec1 ==1,1,
+                   ifelse(expdec2 ==2,2,
+                          ifelse(expdec3 ==3,3,4)))
+  
+  ## inconsistent hyperbolic discounting 1/(1+beta(t-tau))
+  
+  rperiod3ihyp3 = -cost[3]+(1/(1+discount))*reward[4]
+  
+  rperiod4ihyp3 = reward[3]-(1/(1+discount))*cost[4]
+  
+  ihypdec3 = ifelse(ihypdec1 == 1,1,
+                    ifelse(ihypdec2 ==2,2,
+                    which.max(c(NA,NA,rperiod3ihyp3,rperiod4ihyp3))))
+  
+  ihypdec4 = ifelse(ihypdec1 == 1,1,
+                    ifelse(ihypdec2 ==2,2,
+                           ifelse(ihypdec3 == 3, 3, 4)))
+  
+   ## consistent hyperbolic discounting (1+beta*tau)/(1+beta*t)
+  
+  
+  rperiod3chyp3 = -cost[3]+((1+3*discount)/(1+discount*4))*reward[4]
+  
+  rperiod4chyp3 = reward[3]-((1+3*discount)/(1+discount*4))*cost[4]
+
+  chypdec3 = ifelse(chypdec1 == 1,1,
+                    ifelse(chypdec2 ==2, 2,
+                    which.max(c(NA,NA,rperiod3chyp3,rperiod4chyp3))))
+  
+  chypdec4 = ifelse(chypdec1 == 1,1,
+                    ifelse(chypdec2 ==2, 2,
+                           ifelse(chypdec3 == 3, 3,4)))
+  
+  ## Put together results
+  
+  expdec = c(expdec1,expdec2,expdec3,expdec4)
+  
+  ihypdec = c(ihypdec1,ihypdec2,ihypdec3,ihypdec4)
+  
+  chypdec = c(chypdec1,chypdec2,chypdec3,chypdec4)
+  
+  dec = data.frame(exponential = expdec, inconsistent = ihypdec, consistent = chypdec)
+    
+  
+if(length(unique(dec$inconsistent)) == 1){
+    print("Decisions are time consistent for 1/(1+beta*(t-tau)")
+} else{
+    print("Decisions are not time consistent for 1/(1+beta*(t-tau)")
+}
+  
+if(length(unique(dec$consistent)) == 1){
+    print("Decisions are time consistent for (1+ beta*tau)/(1+beta*t)")
+} else{
+    print("Decisions are not time consistent for (1+ beta*tau)/(1+beta*t)")
+}
+  
+return(dec)
+  
+}
+
+
+
+
+
+
+
+
+
+```
