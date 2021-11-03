@@ -170,11 +170,14 @@ return(dec)
 }
 
 
+## Check if working
 
+Inconsistency_test(c(4,4,4,4),c(3,2,9,18),0.75)
 
+## Mimics movie example in O'Donaghue and Raibin 1999. 3 of 4 periods a reward is chosen while 1 period a cost must be taken.
 
+## Values in column indicate when costly action is planned to be taken
 
-
-
+## Exp and consistent should always return the same value, inconsistent may not
 
 ```
