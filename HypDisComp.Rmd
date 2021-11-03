@@ -1,0 +1,7 @@
+---
+title: "Hyperbolic Discounting Comparison"
+author: "Marcus Holloway"
+date: "11/3/2021"
+output: html_document
+---
+
