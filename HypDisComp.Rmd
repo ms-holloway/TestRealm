@@ -37,19 +37,19 @@ Inconsistency_test = function(reward,cost,discount){
   
   rperiod4ihyp1 = reward[1]+(1/(1+discount))*reward[2]+(1/(1+discount*2))*reward[3]-(1/(1+discount*3))*cost[4]
   
-  ihypdec1 = which.max(c(rperiod1ihyp1,rperiod2ihyp1,rperiod3ihyp1,rperiod4ihyp1))
+  ihypdec1 = min(which.max(c(rperiod1ihyp1,rperiod2ihyp1,rperiod3ihyp1,rperiod4ihyp1)))
   
   ## consistent hyperbolic discounting (1+beta*tau)/(1+beta*t)
   
-  rperiod1chyp1 = -cost[1]+((1+discount)/(1+discount*2))*reward[2]+((1+discount)/(1+discount*3))*reward[3]+((1+discount)/(1+discount*4))*reward[4]
+  rperiod1chyp1 = (-cost[1]) + (((1+discount)/(1+discount*2))*reward[2]) + (((1+discount)/(1+discount*3))*reward[3]) + (((1+discount)/(1+discount*4))*reward[4])
   
-  rperiod2chyp1 = reward[1]-((1+discount)/(1+discount*2))*cost[2]+((1+discount)/(1+discount*3))*reward[3]+((1+discount)/(1+discount*4))*reward[4]
+  rperiod2chyp1 = (reward[1]) - (((1+discount)/(1+discount*2))*cost[2]) + (((1+discount)/(1+discount*3))*reward[3]) + (((1+discount)/(1+discount*4))*reward[4])
   
-  rperiod3chyp1 = reward[1]+((1+discount)/(1+discount*2))*reward[2]-((1+discount)/(1+discount*3))*cost[3]+((1+discount)/(1+discount*4))*reward[4]
+  rperiod3chyp1 = (reward[1]) + (((1+discount)/(1+discount*2))*reward[2]) - (((1+discount)/(1+discount*3))*cost[3]) + (((1+discount)/(1+discount*4))*reward[4])
   
-  rperiod4chyp1 = reward[1]+((1+discount)/(1+discount*2))*reward[2]+((1+discount)/(1+discount*3))*reward[3]-((1+discount)/(1+discount*4))*cost[4]
+  rperiod4chyp1 = (reward[1]) + (((1+discount)/(1+discount*2))*reward[2]) + (((1+discount)/(1+discount*3))*reward[3]) - (((1+discount)/(1+discount*4))*cost[4])
   
-  chypdec1 = which.max(c(rperiod1chyp1,rperiod2chyp1,rperiod3chyp1,rperiod4chyp1))
+  chypdec1 = min(which.max(c(rperiod1chyp1,rperiod2chyp1,rperiod3chyp1,rperiod4chyp1)))
   
   ## Each gives period 1 decision. If reward chosen in 1, decision making over. Report decision as 1, can not determine inconsistency.
   
@@ -68,31 +68,31 @@ Inconsistency_test = function(reward,cost,discount){
   rperiod4ex2 = reward[2]+(discount)*reward[3]-(discount^2)*cost[4]
   
   expdec2 = ifelse(expdec1 == 1,1,
-                   which.max(c(NA,rperiod2ex2,rperiod3ex2,rperiod4ex2)))
+                   min(which.max(c(NA,rperiod2ex2,rperiod3ex2,rperiod4ex2))))
   
   ## inconsistent hyperbolic discounting 1/(1+beta(t-tau))
   
   
-  rperiod2ihyp2 = -cost[2]-+(1/(1+discount))*reward[3]+(1/(1+discount*2))*reward[4]
+  rperiod2ihyp2 = -cost[2] + (1/(1+discount))*reward[3]+ (1/(1+discount*2))*reward[4]
   
-  rperiod3ihyp2 = reward[2]-(1/(1+discount))*cost[3]+(1/(1+discount*2))*reward[4]
+  rperiod3ihyp2 = reward[2] - (1/(1+discount))*cost[3] + (1/(1+discount*2))*reward[4]
   
-  rperiod4ihyp2 = reward[2] +(1/(1+discount))*reward[3]- (1/(1+discount*2))*cost[4]
+  rperiod4ihyp2 = reward[2] +(1/(1+discount))*reward[3] - (1/(1+discount*2))*cost[4]
   
   ihypdec2 = ifelse(ihypdec1 == 1,1,
-                    which.max(c(NA,rperiod2ihyp2,rperiod3ihyp2,rperiod4ihyp2)))
+                    min(which.max(c(NA,rperiod2ihyp2,rperiod3ihyp2,rperiod4ihyp2))))
   
   ## consistent hyperbolic discounting (1+beta*tau)/(1+beta*t)
   
   
-  rperiod2chyp2 = -cost[2]+((1+2*discount)/(1+discount*3))*reward[3]+((1+2*discount)/(1+discount*4))*reward[4]
+  rperiod2chyp2 = -cost[2] + (((1+2*discount)/(1+discount*3))*reward[3]) + (((1+2*discount)/(1+discount*4))*reward[4])
   
-  rperiod3chyp2 = reward[2]-((1+2*discount)/(1+discount*3))*cost[3]+((1+2*discount)/(1+discount*4))*reward[4]
+  rperiod3chyp2 = reward[2] - (((1+2*discount)/(1+discount*3))*cost[3]) + (((1+2*discount)/(1+discount*4))*reward[4])
   
-  rperiod4chyp2 = reward[2]+((1+2*discount)/(1+discount*3))*reward[3]-((1+2*discount)/(1+discount*4))*cost[4]
+  rperiod4chyp2 = reward[2] + (((1+2*discount)/(1+discount*3))*reward[3]) - (((1+2*discount)/(1+discount*4))*cost[4])
 
   chypdec2 = ifelse(chypdec1 == 1,1,
-                    which.max(c(NA,rperiod2chyp2,rperiod3chyp2,rperiod4chyp2)))
+                    min(which.max(c(NA,rperiod2chyp2,rperiod3chyp2,rperiod4chyp2))))
   
   #############
   
@@ -181,3 +181,55 @@ Inconsistency_test(c(4,4,4,4),c(3,2,9,18),0.75)
 ## Exp and consistent should always return the same value, inconsistent may not
 
 ```
+
+```{r}
+
+## Show consistency and inconsistency for multiple reward and cost schemes
+
+co = expand.grid(1:13,1:13,1:13,1:13)
+
+costs = c()
+
+for(i in 1:nrow(co)){
+  tem = list(c(co$Var1[i],co$Var2[i],co$Var3[i],co$Var4[i]))
+  
+  costs = append(costs,tem)
+  
+}
+
+costs = data.frame(costs = I(costs))
+
+
+hold = c()
+
+for(i in 1:nrow(costs)){
+ new = ifelse(length(unique(Inconsistency_test(c(1,1,1,1),as.vector(costs$costs[[i]]),0.5)[,3]))==1,T,F)
+  
+  hold = c(hold,new)
+}
+
+costs$reward1discount0.5 = hold
+
+hold2 = c()
+
+for(i in 1:nrow(costs)){
+ new = ifelse(length(unique(Inconsistency_test(c(1,1,1,1),as.vector(costs$costs[[i]]),0.5)[,2]))==1,T,F)
+  
+  hold2 = c(hold2,new)
+}
+
+costs$reward1discount0.5inconsistent = hold2
+
+hold3 = c()
+
+for(i in 1:nrow(costs)){
+ new = ifelse(length(unique(Inconsistency_test(c(1,1,1,1),as.vector(costs$costs[[i]]),0.5)[,1]))==1,T,F)
+  
+  hold3 = c(hold3,new)
+}
+
+costs$reward1discount0.5ex = hold3
+
+
+```
+
