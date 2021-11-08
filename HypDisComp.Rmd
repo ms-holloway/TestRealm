@@ -6,6 +6,10 @@ output: html_document
 ---
 
 ```{r}
+library(pacman)
+
+p_load(dplyr)
+
 Inconsistency_test = function(reward,cost,discount){
 
   ##Determine first period choice given costs, rewards, and discount level for different discounting functions
@@ -25,7 +29,16 @@ Inconsistency_test = function(reward,cost,discount){
   
   rperiod4ex1 = reward[1]+(discount)*reward[2]+(discount^2)*reward[3]-(discount^3)*cost[4]
   
-  expdec1 = which.max(c(rperiod1ex1,rperiod2ex1,rperiod3ex1,rperiod4ex1))
+  ##Tie catch
+  
+  exptie1 = data.frame(period = c(1,2,3,4), vals = c(rperiod1ex1,rperiod2ex1,rperiod3ex1,rperiod4ex1))
+  
+  exptie1 = filter(exptie1, vals >=max(vals))
+  
+  expdec1 = ifelse(exptie1$period[1] == 1,1,
+                   ifelse(exptie1$period[1] ==2,2,
+                         ifelse(exptie1$period[1] == 3,3,4)))
+  
   
   ## inconsistent hyperbolic discounting 1/(1+beta(t-tau))
   
@@ -37,7 +50,17 @@ Inconsistency_test = function(reward,cost,discount){
   
   rperiod4ihyp1 = reward[1]+(1/(1+discount))*reward[2]+(1/(1+discount*2))*reward[3]-(1/(1+discount*3))*cost[4]
   
-  ihypdec1 = min(which.max(c(rperiod1ihyp1,rperiod2ihyp1,rperiod3ihyp1,rperiod4ihyp1)))
+  
+  # Tie Catch
+  
+  ihyptie1 = data.frame(period = c(1,2,3,4), vals = c(rperiod1ihyp1,rperiod2ihyp1,rperiod3ihyp1,rperiod4ihyp1))
+  
+  ihyptie1 = filter(chyptie1, vals >=max(vals))
+  
+  ihypdec1 = ifelse(ihyptie1$period[1] == 1,1,
+                   ifelse(ihyptie1$period[1] ==2,2,
+                         ifelse(ihyptie1$period[1] == 3,3,4)))
+  
   
   ## consistent hyperbolic discounting (1+beta*tau)/(1+beta*t)
   
@@ -49,7 +72,18 @@ Inconsistency_test = function(reward,cost,discount){
   
   rperiod4chyp1 = (reward[1]) + (((1+discount)/(1+discount*2))*reward[2]) + (((1+discount)/(1+discount*3))*reward[3]) - (((1+discount)/(1+discount*4))*cost[4])
   
-  chypdec1 = min(which.max(c(rperiod1chyp1,rperiod2chyp1,rperiod3chyp1,rperiod4chyp1)))
+  
+   # Tie Catch
+  
+  chyptie1 = data.frame(period = c(1,2,3,4), vals = c(rperiod1chyp1,rperiod2chyp1,rperiod3chyp1,rperiod4chyp1))
+  
+  chyptie1 = filter(chyptie1, vals >=max(vals))
+  
+  chypdec1 = ifelse(chyptie1$period[1] == 1,1,
+                   ifelse(chyptie1$period[1] ==2,2,
+                         ifelse(chyptie1$period[1] == 3,3,4)))
+  
+  
   
   ## Each gives period 1 decision. If reward chosen in 1, decision making over. Report decision as 1, can not determine inconsistency.
   
@@ -67,8 +101,16 @@ Inconsistency_test = function(reward,cost,discount){
   
   rperiod4ex2 = reward[2]+(discount)*reward[3]-(discount^2)*cost[4]
   
+  
+   # Tie Catch
+  
+  exptie2 = data.frame(period = c(2,3,4), vals = c(rperiod2ex2,rperiod3ex2,rperiod4ex2))
+  
+  exptie2 = filter(exptie2, vals >=max(vals))
+  
   expdec2 = ifelse(expdec1 == 1,1,
-                   min(which.max(c(NA,rperiod2ex2,rperiod3ex2,rperiod4ex2))))
+                   ifelse(exptie2$period[1] ==2,2,
+                         ifelse(exptie2$period[1] == 3,3,4)))
   
   ## inconsistent hyperbolic discounting 1/(1+beta(t-tau))
   
@@ -79,8 +121,16 @@ Inconsistency_test = function(reward,cost,discount){
   
   rperiod4ihyp2 = reward[2] +(1/(1+discount))*reward[3] - (1/(1+discount*2))*cost[4]
   
+  # Tie Catch
+  
+  ihyptie2 = data.frame(period = c(2,3,4), vals = c(rperiod2ihyp2,rperiod3ihyp2,rperiod4ihyp2))
+  
+  ihyptie2 = filter(ihyptie2, vals >=max(vals))
+  
   ihypdec2 = ifelse(ihypdec1 == 1,1,
-                    min(which.max(c(NA,rperiod2ihyp2,rperiod3ihyp2,rperiod4ihyp2))))
+                   ifelse(ihyptie2$period[1] ==2,2,
+                         ifelse(ihyptie2$period[1] == 3,3,4)))
+  
   
   ## consistent hyperbolic discounting (1+beta*tau)/(1+beta*t)
   
@@ -90,9 +140,18 @@ Inconsistency_test = function(reward,cost,discount){
   rperiod3chyp2 = reward[2] - (((1+2*discount)/(1+discount*3))*cost[3]) + (((1+2*discount)/(1+discount*4))*reward[4])
   
   rperiod4chyp2 = reward[2] + (((1+2*discount)/(1+discount*3))*reward[3]) - (((1+2*discount)/(1+discount*4))*cost[4])
-
+  
+   # Tie Catch
+  
+  chyptie2 = data.frame(period = c(2,3,4), vals = c(rperiod2chyp2,rperiod3chyp2,rperiod4chyp2))
+  
+  chyptie2 = filter(chyptie2, vals >=max(vals))
+  
   chypdec2 = ifelse(chypdec1 == 1,1,
-                    min(which.max(c(NA,rperiod2chyp2,rperiod3chyp2,rperiod4chyp2))))
+                   ifelse(chyptie2$period[1] ==2,2,
+                         ifelse(chyptie2$period[1]== 3,3,4)))
+
+ 
   
   #############
   
@@ -105,12 +164,19 @@ Inconsistency_test = function(reward,cost,discount){
   
   rperiod4ex3 = reward[3]-(discount)*cost[4]
   
+  
+  # Tie Catch
+  
+  exptie3= data.frame(period = c(3,4), vals = c(rperiod3ex3,rperiod4ex3))
+  
+  exptie3 = filter(exptie2, vals >=max(vals))
+  
   expdec3 = ifelse(expdec1 == 1,1,
                    ifelse(expdec2 == 2,2,
-                          which.max(c(NA,NA,rperiod3ex3,rperiod4ex3))))
+                         ifelse(exptie3$period[1] == 3,3,4)))
   
-  expdec4 = ifelse(expdec1 ==1,1,
-                   ifelse(expdec2 ==2,2,
+  expdec4 = ifelse(expdec3 ==1,1,
+                   ifelse(expdec3 ==2,2,
                           ifelse(expdec3 ==3,3,4)))
   
   ## inconsistent hyperbolic discounting 1/(1+beta(t-tau))
@@ -119,13 +185,19 @@ Inconsistency_test = function(reward,cost,discount){
   
   rperiod4ihyp3 = reward[3]-(1/(1+discount))*cost[4]
   
-  ihypdec3 = ifelse(ihypdec1 == 1,1,
-                    ifelse(ihypdec2 ==2,2,
-                    which.max(c(NA,NA,rperiod3ihyp3,rperiod4ihyp3))))
+ # Tie Catch
   
-  ihypdec4 = ifelse(ihypdec1 == 1,1,
-                    ifelse(ihypdec2 ==2,2,
-                           ifelse(ihypdec3 == 3, 3, 4)))
+  ihyptie3= data.frame(period = c(3,4), vals = c(rperiod3ihyp3,rperiod4ihyp3))
+  
+  ihyptie3 = filter(ihyptie2, vals >=max(vals))
+  
+  ihypdec3 = ifelse(ihypdec2== 1,1,
+                   ifelse(ihypdec2 == 2,2,
+                         ifelse(ihyptie3$period[1] == 3,3,4)))
+  
+  ihypdec4 = ifelse(ihypdec3 ==1,1,
+                   ifelse(ihypdec3 ==2,2,
+                          ifelse(ihypdec3 ==3,3,4)))
   
    ## consistent hyperbolic discounting (1+beta*tau)/(1+beta*t)
   
@@ -133,14 +205,20 @@ Inconsistency_test = function(reward,cost,discount){
   rperiod3chyp3 = -cost[3]+((1+3*discount)/(1+discount*4))*reward[4]
   
   rperiod4chyp3 = reward[3]-((1+3*discount)/(1+discount*4))*cost[4]
-
-  chypdec3 = ifelse(chypdec1 == 1,1,
-                    ifelse(chypdec2 ==2, 2,
-                    which.max(c(NA,NA,rperiod3chyp3,rperiod4chyp3))))
   
-  chypdec4 = ifelse(chypdec1 == 1,1,
-                    ifelse(chypdec2 ==2, 2,
-                           ifelse(chypdec3 == 3, 3,4)))
+   # Tie Catch
+  
+  chyptie3= data.frame(period = c(3,4), vals = c(rperiod3chyp3,rperiod4chyp3))
+  
+  chyptie3 = filter(chyptie2, vals >=max(vals))
+  
+  chypdec3 = ifelse(chypdec2 == 1,1,
+                   ifelse(chypdec2 == 2,2,
+                         ifelse(chyptie3$period[1] == 3,3,4)))
+  
+  chypdec4 = ifelse(chypdec1 ==1,1,
+                   ifelse(chypdec2 ==2,2,
+                          ifelse(chypdec3 ==3,3,4)))
   
   ## Put together results
   
